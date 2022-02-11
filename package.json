@@ -1,16 +1,17 @@
 {
-  "name": "meta",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "jddev",
-  "license": "ISC",
-  "dependencies": {
-    "axios": "^0.25.0",
-    "fs": "0.0.1-security",
-    "objects-to-csv": "^1.3.6"
-  }
+    "name": "meta",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node index.js"
+    },
+    "author": "jddev",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^0.25.0",
+        "fs": "0.0.1-security",
+        "objects-to-csv": "^1.3.6"
+    }
 }
