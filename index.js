@@ -61,12 +61,6 @@ const app = new express();
         };
     });
 
-    // Covert object to csv
-    let csv = new ObjectsToCsv(toadChangedList);
-
-    // Write csv file
-    await csv.toDisk("./toad.csv");
-
     // Get the admin phase data from metabase
     const adminData = await getMetaData(session.id, queries.admin);
 
@@ -78,6 +72,20 @@ const app = new express();
             path: x[9],
             phase: JSON.parse(x[4]).phase,
         };
+    });
+
+    app.get("/toad", async (req, res) => {
+        // Covert object to csv
+        let csv = new ObjectsToCsv(toadChangedList);
+
+        // Write csv file
+        await csv.toDisk("./toad.csv");
+
+        // Download the file
+        res.download("./toad.csv", () => {
+            //Then delete the csv file in the callback
+            fs.unlinkSync("./toad.csv");
+        });
     });
 
     app.get("/admin", async (req, res) => {
