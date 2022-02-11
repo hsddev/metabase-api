@@ -4,6 +4,8 @@ const getMetaSession = require("./getMetaSession");
 const ObjectsToCsv = require("objects-to-csv");
 const queries = require("./queries");
 const getOccurrence = require("./helpers");
+const express = require("express");
+const app = new express();
 
 // Start function
 (async function () {
@@ -83,4 +85,15 @@ const getOccurrence = require("./helpers");
 
     // Write csv file
     await csv.toDisk("./admin.csv");
+
+    app.get("/admin", (req, res) => {
+        res.setHeader("Content-disposition", "attachment; filename=admin.csv");
+        res.set("Content-Type", "text/csv");
+        res.status(200).send(csv);
+    });
+
+    const server = app.listen(process.env.PORT || 5000, () => {
+        const port = server.address().port;
+        console.log(`Express is working on port ${port}`);
+    });
 })();
