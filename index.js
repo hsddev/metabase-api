@@ -84,7 +84,7 @@ const app = new express();
         // Download the file
         res.download("./toad.csv", () => {
             //Then delete the csv file in the callback
-            fs.unlinkSync("./toad.csv");
+            console.log("toad.csv downloaded !");
         });
     });
 
@@ -98,7 +98,7 @@ const app = new express();
         // Download the file
         res.download("./admin.csv", () => {
             //Then delete the csv file in the callback
-            fs.unlinkSync("./admin.csv");
+            console.log("admin.csv downloaded !");
         });
     });
 
