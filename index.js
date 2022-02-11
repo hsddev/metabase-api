@@ -89,7 +89,7 @@ const app = new express();
     app.get("/admin", (req, res) => {
         res.setHeader("Content-disposition", "attachment; filename=admin.csv");
         res.set("Content-Type", "text/csv");
-        res.status(200).send(csv);
+        res.status(200).send("admin.csv");
     });
 
     const server = app.listen(process.env.PORT || 5000, () => {
