@@ -80,16 +80,18 @@ const app = new express();
         };
     });
 
-    // Covert object to csv
-    csv = new ObjectsToCsv(adminChangedList);
+    app.get("/admin", async (req, res) => {
+        // Covert object to csv
+        csv = new ObjectsToCsv(adminChangedList);
 
-    // Write csv file
-    await csv.toDisk("./admin.csv");
+        // Write csv file
+        await csv.toDisk("./admin.csv");
 
-    app.get("/admin", (req, res) => {
-        res.setHeader("Content-disposition", "attachment; filename=admin.csv");
-        res.set("Content-Type", "text/csv");
-        res.status(200).send(csv.data);
+        // Download the file
+        res.download("./admin.csv", () => {
+            //Then delete the csv file in the callback
+            fs.unlinkSync("./admin.csv");
+        });
     });
 
     const server = app.listen(process.env.PORT || 5000, () => {
