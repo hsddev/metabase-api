@@ -124,8 +124,8 @@ const app = new express();
     });
 
     //Run the server
-    const server = app.listen(1500, () => {
+    const server = app.listen(process.env.PORT || 5000, () => {
         const port = server.address().port;
-        console.log(`Express is working on port ${1500}`);
+        console.log(`Express is working on port ${port}`);
     });
 })();
