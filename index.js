@@ -3,7 +3,6 @@ const getMetaData = require("./getMetaData");
 const getMetaSession = require("./getMetaSession");
 const ObjectsToCsv = require("objects-to-csv");
 const queries = require("./queries");
-const getOccurrence = require("./helpers");
 const express = require("express");
 const app = new express();
 
@@ -21,6 +20,7 @@ const app = new express();
             JSON.parse(x[3]).score != undefined
                 ? JSON.parse(x[3]).score
                 : "Games sessions not completed";
+
         return {
             login: x[8],
             createdAt: x[0],
@@ -29,7 +29,6 @@ const app = new express();
             lastName: x[18],
             firstName: x[17],
             gamesScore: score,
-            gamesAttempts: getOccurrence(x, x[8]),
             memory: `Level ${
                 JSON.parse(x[3]).games != undefined
                     ? JSON.parse(x[3]).games[0].results[
@@ -61,6 +60,28 @@ const app = new express();
         };
     });
 
+    // An object to save the number of gameAttempts of each user
+    var counter = {};
+
+    // Calculate the gameAttempts of each user and return the final toad list
+    let finalToadList = toadChangedList.map((x) => {
+        counter[x.login] = (counter[x.login] || 0) + 1;
+
+        return {
+            login: x.login,
+            createdAt: x.createdAt,
+            updatedAt: x.updatedAt,
+            email: x.email,
+            lastName: x.lastName,
+            firstName: x.firstName,
+            gamesScore: x.gamesScore,
+            gamesAttempts: counter[x.login],
+            memory: x.memory,
+            zzle: x.zzle,
+            stepStatus: x.stepStatus,
+        };
+    });
+
     // Get the admin phase data from metabase
     const adminData = await getMetaData(session.id, queries.admin);
 
@@ -76,7 +97,7 @@ const app = new express();
 
     app.get("/toad", async (req, res) => {
         // Covert object to csv
-        let csv = new ObjectsToCsv(toadChangedList);
+        let csv = new ObjectsToCsv(finalToadList);
 
         // Write csv file
         await csv.toDisk("./toad.csv");
@@ -102,9 +123,9 @@ const app = new express();
         });
     });
 
-    // Run the server
-    const server = app.listen(process.env.PORT || 5000, () => {
+    //Run the server
+    const server = app.listen(1500, () => {
         const port = server.address().port;
-        console.log(`Express is working on port ${port}`);
+        console.log(`Express is working on port ${1500}`);
     });
 })();
