@@ -63,8 +63,8 @@ const app = new express();
     // An object to save the number of gameAttempts of each user
     var counter = {};
 
-    // Calculate the gameAttempts of each user and return the final toad list
-    let finalToadList = toadChangedList.map((x) => {
+    // Calculate the gameAttempts of each user and add it to the toad list
+    toadChangedList = toadChangedList.map((x) => {
         counter[x.login] = (counter[x.login] || 0) + 1;
 
         return {
@@ -81,6 +81,19 @@ const app = new express();
             stepStatus: x.stepStatus,
         };
     });
+
+    // return the last attempts of each user and remove duplicates
+    const finalToadList = Object.values(
+        toadChangedList.reduce((acc, obj) => {
+            const curr = acc[obj.login];
+            acc[obj.login] = curr
+                ? curr.gamesAttempts < obj.gamesAttempts
+                    ? obj
+                    : curr
+                : obj;
+            return acc;
+        }, {})
+    );
 
     // Get the admin phase data from metabase
     const adminData = await getMetaData(session.id, queries.admin);
