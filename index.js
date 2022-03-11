@@ -100,6 +100,32 @@ const app = new express();
         arrayFiltered.push(obj);
     });
 
+    function removeItemAll(arr, value) {
+        var i = 0;
+        while (i < arr.length) {
+            if (arr[i] === value) {
+                arr.splice(i, 1);
+            } else {
+                ++i;
+            }
+        }
+        return arr;
+    }
+
+    // Delete candidate who has same name and rejected status
+    arrayFiltered.forEach((obj) => {
+        const item = arrayFiltered.find(
+            (thisItem) =>
+                thisItem.lastName === obj.lastName &&
+                thisItem.firstName === obj.firstName &&
+                thisItem.stepStatus == "Rejected"
+        );
+
+        if (item) {
+            removeItemAll(arrayFiltered, item);
+        }
+    });
+
     // Get the admin phase data from metabase
     const adminData = await getMetaData(session.id, queries.admin);
 
