@@ -82,18 +82,23 @@ const app = new express();
         };
     });
 
-    // return the last attempts of each user and remove duplicates
-    const finalToadList = Object.values(
-        toadChangedList.reduce((acc, obj) => {
-            const curr = acc[obj.login];
-            acc[obj.login] = curr
-                ? curr.gamesAttempts < obj.gamesAttempts
-                    ? obj
-                    : curr
-                : obj;
-            return acc;
-        }, {})
-    );
+    // remove duplicates and keep the candidates which is the latest attempts and score
+    const arrayFiltered = [];
+
+    toadChangedList.forEach((obj) => {
+        const item = arrayFiltered.find(
+            (thisItem) => thisItem.login === obj.login
+        );
+        if (item) {
+            if (item.gamesAttempts < obj.gamesAttempts) {
+                item.gamesAttempts = obj.gamesAttempts;
+            }
+
+            return;
+        }
+
+        arrayFiltered.push(obj);
+    });
 
     // Get the admin phase data from metabase
     const adminData = await getMetaData(session.id, queries.admin);
@@ -110,7 +115,7 @@ const app = new express();
 
     app.get("/toad", async (req, res) => {
         // Covert object to csv
-        let csv = new ObjectsToCsv(finalToadList);
+        let csv = new ObjectsToCsv(arrayFiltered);
 
         // Write csv file
         await csv.toDisk("./toad.csv");
