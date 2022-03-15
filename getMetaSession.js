@@ -9,7 +9,7 @@ const opts = {
         accept: "application/json",
         "content-type": "application/json",
     },
-    data: '{"username": "salah@01founders.co", "password": "CrpYXoaEi8ywCY"}',
+    data: '{"username": "salaxxxxxxx.co", "password": "xxxxxxxxx"}',
 };
 
 // Get metabase session
