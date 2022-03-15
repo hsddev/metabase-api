@@ -4,7 +4,9 @@ const getMetaSession = require("./getMetaSession");
 const ObjectsToCsv = require("objects-to-csv");
 const queries = require("./queries");
 const express = require("express");
+const req = require("express/lib/request");
 const app = new express();
+const helpers = require("./helpers");
 
 // Start function
 (async function () {
@@ -63,7 +65,7 @@ const app = new express();
     // An object to save the number of gameAttempts of each user
     var counter = {};
 
-    // Calculate the gameAttempts of each user and add it to the toad list
+    // Calculate the gameAttempts of each user and add it to the toad list object
     toadChangedList = toadChangedList.map((x) => {
         counter[x.login] = (counter[x.login] || 0) + 1;
 
@@ -83,10 +85,10 @@ const app = new express();
     });
 
     // remove duplicates and keep the candidates which is the latest attempts and score
-    const arrayFiltered = [];
+    const toadListFiltered = [];
 
     toadChangedList.forEach((obj) => {
-        const item = arrayFiltered.find(
+        const item = toadListFiltered.find(
             (thisItem) => thisItem.login === obj.login
         );
         if (item) {
@@ -97,24 +99,12 @@ const app = new express();
             return;
         }
 
-        arrayFiltered.push(obj);
+        toadListFiltered.push(obj);
     });
 
-    function removeItemAll(arr, value) {
-        var i = 0;
-        while (i < arr.length) {
-            if (arr[i] === value) {
-                arr.splice(i, 1);
-            } else {
-                ++i;
-            }
-        }
-        return arr;
-    }
-
-    // Delete candidate who has same name and rejected status
-    arrayFiltered.forEach((obj) => {
-        const item = arrayFiltered.find(
+    // Delete candidate who has same first name & last name & rejected status
+    toadListFiltered.forEach((obj) => {
+        const item = toadListFiltered.find(
             (thisItem) =>
                 thisItem.lastName === obj.lastName &&
                 thisItem.firstName === obj.firstName &&
@@ -122,7 +112,7 @@ const app = new express();
         );
 
         if (item) {
-            removeItemAll(arrayFiltered, item);
+            helpers.removeItemAll(toadListFiltered, item);
         }
     });
 
@@ -141,7 +131,7 @@ const app = new express();
 
     app.get("/toad", async (req, res) => {
         // Covert object to csv
-        let csv = new ObjectsToCsv(arrayFiltered);
+        let csv = new ObjectsToCsv(toadListFiltered);
 
         // Write csv file
         await csv.toDisk("./toad.csv");
